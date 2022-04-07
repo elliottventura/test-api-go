@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"reflect"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +16,7 @@ import (
 
 // album represents data about a record album.
 type album struct {
-	ID     string  `json:"id"`
+	ID     int     `json:"id"`
 	Title  string  `json:"title"`
 	Artist string  `json:"artist"`
 	Price  float64 `json:"price"`
@@ -24,9 +27,9 @@ type album struct {
 var albums = []album{
 	// {ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99, Major: major{Name: "Sony", Country: "Japan"}},
 	// {ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99, Major: major{Name: "Universal", Country: "Nederlands"}},
-	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
-	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
-	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
+	{ID: 0, Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
+	{ID: 1, Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
+	{ID: 2, Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
 func main() {
@@ -34,8 +37,9 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
+	router.DELETE("/albums/:id", deleteAlbumByID)
 
-	router.Run("localhost:8082")
+	router.Run("localhost:8083")
 }
 
 // getAlbums responds with the list of all albums as JSON.
@@ -47,11 +51,12 @@ func getAlbums(c *gin.Context) {
 func postAlbums(c *gin.Context) {
 	var newAlbum album
 
-	// Call BindJSON to bind the received JSON to
-	// newAlbum.
+	// Call BindJSON to bind the received JSON to newAlbum.
 	if err := c.BindJSON(&newAlbum); err != nil {
 		return
 	}
+
+	newAlbum.ID = len(albums)
 
 	// Add the new album to the slice.
 	albums = append(albums, newAlbum)
@@ -59,7 +64,8 @@ func postAlbums(c *gin.Context) {
 }
 
 func getAlbumByID(c *gin.Context) {
-	id := c.Param("id")
+	id, err := strconv.Atoi(c.Param("id"))
+	fmt.Println(id, err, reflect.TypeOf(id))
 
 	// Loop over the list of albums, looking for
 	// an album whose ID value matches the parameter.
@@ -70,4 +76,24 @@ func getAlbumByID(c *gin.Context) {
 		}
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+}
+
+func deleteAlbumByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	fmt.Println(id, err, reflect.TypeOf(id))
+
+	// Loop over the list of albums, looking for
+	// an album whose ID value matches the parameter.
+	for i, a := range albums {
+		if a.ID == id {
+			albums = RemoveIndex(albums, i)
+			c.IndentedJSON(http.StatusOK, gin.H{"message": "album succesfully deleted"})
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+}
+
+func RemoveIndex(s []album, index int) []album {
+	return append(s[:index], s[index+1:]...)
 }
