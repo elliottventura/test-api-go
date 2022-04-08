@@ -39,7 +39,7 @@ func main() {
 	router.POST("/albums", postAlbums)
 	router.DELETE("/albums/:id", deleteAlbumByID)
 
-	router.Run("localhost:8083")
+	router.Run(":8083")
 }
 
 // getAlbums responds with the list of all albums as JSON.
