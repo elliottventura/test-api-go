@@ -22,7 +22,7 @@ var ctx = context.TODO()
 
 func init() {
 	fmt.Println("INIT !!!!!!!!!!!!!!!")
-	albumOptions := options.Client().ApplyURI("mongodb://localhost:27017/")
+	albumOptions := options.Client().ApplyURI("mongodb://mongo:27017/")
 	album, err := mongo.Connect(ctx, albumOptions)
 	if err != nil {
 		log.Fatal(err)
@@ -69,7 +69,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	router.Run("localhost:8083")
+	router.Run(":8083")
 }
 
 // getAlbums responds with the list of all albums as JSON.
