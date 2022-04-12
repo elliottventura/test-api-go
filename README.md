@@ -5,6 +5,9 @@ go get .
 # Launch the application
 go run .
 
+# To add mongo dependencies
+go get go.mongodb.org/mongo-driver
+
 # To launch with docker
 ## Build the image
 docker build --tag test-api-go:v1 --file=".\Dockerfile" .
