@@ -5,6 +5,9 @@ go get .
 # Launch the application
 go run .
 
+# Mongo is required !
+To launch it, in a command prompt simply launch **mongod** (or C:\Tools\mongodb\bin\mongod)
+
 # To add mongo dependencies
 go get go.mongodb.org/mongo-driver
 
